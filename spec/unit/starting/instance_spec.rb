@@ -455,6 +455,13 @@ describe Dea::Instance do
         Dea::Loggregator.emitter = @emitter
       end
 
+      it "defaults to 60 seconds timeout" do
+        deferrable.should_receive(:timeout).with(60)
+        execute_health_check do
+          deferrable.succeed
+        end
+      end
+
       it 'succeeds when the port is open' do
         result = execute_health_check do
           deferrable.succeed
@@ -507,30 +514,6 @@ describe Dea::Instance do
       end
     end
 
-    context 'when health_check_timeout is specified in start request' do
-      before { Dea::HealthCheck::PortOpen.stub(:new).and_yield(deferrable) }
-
-      it 'should wait for specified timeout' do
-        bootstrap.config['default_health_check_timeout'] = 100
-        instance.attributes['health_check_timeout'] = 200
-        deferrable.should_receive(:timeout).with(200)
-        execute_health_check do
-          deferrable.succeed
-        end
-      end
-    end
-
-    context 'when health_check_timeout is not specified' do
-      before { Dea::HealthCheck::PortOpen.stub(:new).and_yield(deferrable) }
-
-      it 'should use default' do
-        bootstrap.config['default_health_check_timeout'] = 100
-        deferrable.should_receive(:timeout).with(100)
-        execute_health_check do
-          deferrable.succeed
-        end
-      end
-    end
   end
 
   describe 'start transition' do

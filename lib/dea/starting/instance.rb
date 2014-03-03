@@ -728,7 +728,7 @@ module Dea
             p.deliver(false)
           end
 
-          hc.timeout(health_check_timeout)
+          hc.timeout(60)
         end
       end
     end
@@ -899,18 +899,6 @@ module Dea
 
       # New path
       File.join(root, 'tmp', 'rootfs', 'home', 'vcap', *parts)
-    end
-
-    def health_check_timeout
-      app_specific_health_check_timeout || default_health_check_timeout
-    end
-
-    def app_specific_health_check_timeout
-      attributes['health_check_timeout']
-    end
-
-    def default_health_check_timeout
-      config['default_health_check_timeout']
     end
 
     def logger
